@@ -10,5 +10,6 @@ setup(
     author_email="broder@mit.edu",
     url="http://ebroder.net/code/RouteFS",
     license="MIT",
-    packages=find_packages()
+    packages=find_packages(),
+    requires=['fuse_python>=0.2a', 'Routes>=1.7']
 )
