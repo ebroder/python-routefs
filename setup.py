@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name="RouteFS",
@@ -10,5 +10,5 @@ setup(
     author_email="broder@mit.edu",
     url="http://ebroder.net/code/RouteFS",
     license="MIT",
-    py_modules=['routefs'],
+    packages=find_packages()
 )
