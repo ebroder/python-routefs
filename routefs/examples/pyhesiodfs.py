@@ -13,10 +13,11 @@ class PyHesiodFS(routefs.RouteFS):
     def make_map(self):
         m = Mapper()
         m.connect('', controller='getList')
+        m.connect('README.txt', controller='getReadme')
         m.connect(':action', controller='getLocker')
         return m
     
-    def getLocker(self, action):
+    def getLocker(self, action, **kwargs):
         if action in self.cache:
             return routefs.Symlink(self.cache[action])
         
@@ -28,8 +29,17 @@ class PyHesiodFS(routefs.RouteFS):
         except (TypeError, KeyError, IndexError):
             return
     
-    def getList(self, action):
-        return routefs.Directory(self.cache.keys())
+    def getList(self, **kwargs):
+        return routefs.Directory(self.cache.keys() + ['README.txt'])
+    
+    def getReadme(self, **kwargs):
+        return """
+This is the pyHesiodFS FUSE automounter. To access a Hesiod filsys,
+just access /mit/name.
+
+If you're using the Finder, try pressing Cmd+Shift+G and then entering
+/mit/name
+"""
 
 if __name__ == '__main__':
     routefs.main(PyHesiodFS)
