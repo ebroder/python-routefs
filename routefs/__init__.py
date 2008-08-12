@@ -149,18 +149,38 @@ class RouteFS(fuse.Fuse):
         else:
             return obj
 
-class Directory(list):
+class TreeEntry(object):
+    default_mode = 0444
+    
+    def __new__(cls, contents, mode=None):
+        return super(TreeEntry, cls).__new__(cls, contents)
+    
+    def __init__(self, contents, mode=None):
+        if mode is None:
+            self.mode = self.default_mode
+        else:
+            self.mode = mode
+        
+        super(TreeEntry, self).__init__(contents)
+
+class Directory(TreeEntry, list):
     """
     A dummy class representing a filesystem entry that should be a
     directory
     """
-    pass
+    default_mode = 0555
 
-class Symlink(str):
+class Symlink(TreeEntry, str):
     """
     A dummy class representing something that should be a symlink
     """
-    pass
+    default_mode = 0777
+
+class File(TreeEntry, str):
+    """
+    A dummy class representing something that should be a file
+    """
+    default_mode = 0444
 
 def main(cls):
     """
@@ -174,4 +194,4 @@ def main(cls):
 
 from dictfs import DictFS
 
-__all__ = ['RouteFS', 'DictFS', 'Symlink', 'Directory', 'main']
+__all__ = ['RouteFS', 'DictFS', 'Symlink', 'Directory', 'File', 'main']
