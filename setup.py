@@ -11,5 +11,5 @@ setup(
     url="http://ebroder.net/code/RouteFS",
     license="MIT",
     packages=find_packages(),
-    requires=['fuse_python>=0.2a', 'Routes>=1.7']
+    install_requires=['fuse_python>=0.2a', 'Routes>=1.7']
 )
