@@ -43,6 +43,6 @@ class DictFS(routefs.RouteFS):
             return
         
         if type(tree) is dict:
-            return routefs.Directory(tree.keys())
+            return tree.keys()
         else:
             return tree
