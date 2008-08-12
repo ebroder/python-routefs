@@ -113,14 +113,14 @@ class RouteFS(fuse.Fuse):
         
         st = RouteStat()
         if type(obj) is Directory:
-            st.st_mode = stat.S_IFDIR | 0755
+            st.st_mode = stat.S_IFDIR | obj.mode
             st.st_nlink = 2
         elif type(obj) is Symlink:
-            st.st_mode = stat.S_IFLNK | 0777
+            st.st_mode = stat.S_IFLNK | obj.mode
             st.st_nlink = 1
             st.st_size = len(obj)
         else:
-            st.st_mode = stat.S_IFREG | 0444
+            st.st_mode = stat.S_IFREG | obj.mode
             st.st_nlink = 1
             st.st_size = len(obj)
         
