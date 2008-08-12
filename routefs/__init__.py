@@ -15,7 +15,6 @@ import fuse
 import routes
 import errno
 import stat
-from dictfs import DictFS
 
 fuse.fuse_python_api = (0, 2)
 
@@ -172,5 +171,7 @@ def main(cls):
                  dash_s_do='setsingle')
     server.parse(errex=1)
     server.main()
+
+from dictfs import DictFS
 
 __all__ = ['RouteFS', 'DictFS', 'Symlink', 'Directory', 'main']
