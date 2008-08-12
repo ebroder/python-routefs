@@ -86,6 +86,10 @@ class RouteFS(fuse.Fuse):
             return
         controller = match.pop('controller')
         result = getattr(self, controller)(**match)
+        if type(result) is str:
+            result = File(result)
+        if type(result) is list:
+            result = Directory(result)
         return result
     
     def readdir(self, path, offset):
