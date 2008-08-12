@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 """
 DictFS allows you to easily create read-only filesystems when the
 file tree is known in advance.
@@ -22,8 +20,7 @@ class DictFS(routefs.RouteFS):
         """
         This property should be overridden in your DictFS descendant
         """
-        return dict(Hello='World',
-                    Directory=dict(a='a', b='b', c=routefs.Symlink('a')))
+        return dict()
     
     def make_map(self):
         m = Mapper()
@@ -49,6 +46,3 @@ class DictFS(routefs.RouteFS):
             return routefs.Directory(tree.keys())
         else:
             return tree
-
-if __name__ == '__main__':
-    routefs.main(DictFS)
