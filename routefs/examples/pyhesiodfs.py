@@ -30,16 +30,16 @@ class PyHesiodFS(routefs.RouteFS):
             return
     
     def getList(self, **kwargs):
-        return routefs.Directory(self.cache.keys() + ['README.txt'])
+        return self.cache.keys() + ['README.txt']
     
     def getReadme(self, **kwargs):
-        return routefs.File("""
+        return """
 This is the pyHesiodFS FUSE automounter. To access a Hesiod filsys,
 just access /mit/name.
 
 If you're using the Finder, try pressing Cmd+Shift+G and then entering
 /mit/name
-""")
+"""
 
 if __name__ == '__main__':
     routefs.main(PyHesiodFS)
