@@ -111,24 +111,7 @@ class RouteFS(fuse.Fuse):
         The stat information for a directory, symlink, or file is
         predetermined based on which it is.
         """
-        obj = self._get_file(path)
-        if type(obj) is NoEntry:
-            return -errno.ENOENT
-        
-        st = RouteStat()
-        if type(obj) is Directory:
-            st.st_mode = stat.S_IFDIR | obj.mode
-            st.st_nlink = 2
-        elif type(obj) is Symlink:
-            st.st_mode = stat.S_IFLNK | obj.mode
-            st.st_nlink = 1
-            st.st_size = len(obj)
-        else:
-            st.st_mode = stat.S_IFREG | obj.mode
-            st.st_nlink = 1
-            st.st_size = len(obj)
-        
-        return st
+        return self._get_file(path).getattr()
     
     def read(self, path, length, offset):
         """
@@ -156,10 +139,12 @@ class RouteFS(fuse.Fuse):
             return obj
 
 class TreeKey(object):
-    pass
+    def getattr(self):
+        return -errno.EINVAL
 
 class NoEntry(TreeKey):
-    pass
+    def getattr(self):
+        return -errno.ENOENT
 
 class TreeEntry(TreeKey):
     default_mode = 0444
@@ -182,17 +167,37 @@ class Directory(TreeEntry, list):
     """
     default_mode = 0555
 
+    def getattr(self):
+        st = RouteStat()
+        st.st_mode = stat.S_IFDIR | self.mode
+        st.st_nlink = 2
+        return st
+
 class Symlink(TreeEntry, str):
     """
     A dummy class representing something that should be a symlink
     """
     default_mode = 0777
 
+    def getattr(self):
+        st = RouteStat()
+        st.st_mode = stat.S_IFLNK | self.mode
+        st.st_nlink = 1
+        st.st_size = len(self)
+        return st
+
 class File(TreeEntry, str):
     """
     A dummy class representing something that should be a file
     """
     default_mode = 0444
+
+    def getattr(self):
+        st = RouteStat()
+        st.st_mode = stat.S_IFREG | self.mode
+        st.st_nlink = 1
+        st.st_size = len(self)
+        return st
 
 def main(cls):
     """
