@@ -119,13 +119,7 @@ class RouteFS(fuse.Fuse):
         """
         If the path specified is a symlink, return the target
         """
-        obj = self._get_file(path)
-        if obj is None:
-            return -errno.ENOENT
-        elif type(obj) is not Symlink:
-            return -errno.EINVAL
-        else:
-            return obj
+        return self._get_file(path).readlink()
 
 class TreeKey(object):
     def getattr(self):
@@ -134,6 +128,8 @@ class TreeKey(object):
         return -errno.EINVAL
     def read(self, length, offset):
         return -errno.EINVAL
+    def readlink(self):
+        return -errno.EINVAL
 
 class NoEntry(TreeKey):
     def getattr(self):
@@ -141,6 +137,8 @@ class NoEntry(TreeKey):
     def readdir(self, offset):
         return -errno.ENOENT
     def read(self, length, offset):
+        return -errno.ENOENT
+    def readlink(self):
         return -errno.ENOENT
 
 class TreeEntry(TreeKey):
@@ -186,6 +184,9 @@ class Symlink(TreeEntry, str):
         st.st_nlink = 1
         st.st_size = len(self)
         return st
+
+    def readlink(self):
+        return self
 
 class File(TreeEntry, str):
     """
