@@ -97,12 +97,7 @@ class RouteFS(fuse.Fuse):
         If the path referred to is a directory, return the elements of
         that diectory
         """
-        obj = self._get_file(path)
-        if type(obj) is not Directory:
-            return
-        else:
-            for member in ['.', '..'] + obj:
-                yield fuse.Direntry(str(member))
+        return self._get_file(path).readdir(offset)
     
     def getattr(self, path):
         """
@@ -141,9 +136,13 @@ class RouteFS(fuse.Fuse):
 class TreeKey(object):
     def getattr(self):
         return -errno.EINVAL
+    def readdir(self, offset):
+        return -errno.EINVAL
 
 class NoEntry(TreeKey):
     def getattr(self):
+        return -errno.ENOENT
+    def readdir(self, offset):
         return -errno.ENOENT
 
 class TreeEntry(TreeKey):
@@ -172,6 +171,10 @@ class Directory(TreeEntry, list):
         st.st_mode = stat.S_IFDIR | self.mode
         st.st_nlink = 2
         return st
+
+    def readdir(self, offset):
+        for member in ['.', '..'] + self:
+            yield fuse.Direntry(str(member))
 
 class Symlink(TreeEntry, str):
     """
