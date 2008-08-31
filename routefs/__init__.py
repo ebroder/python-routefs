@@ -113,13 +113,7 @@ class RouteFS(fuse.Fuse):
         If the path specified is a file, return the requested portion
         of the file
         """
-        obj = self._get_file(path)
-        if type(obj) is NoEntry:
-            return -errno.ENOENT
-        elif type(obj) in (Directory, Symlink):
-            return -errno.EINVAL
-        else:
-            return obj[offset:offset + length]
+        return self._get_file(path).read(length, offset)
     
     def readlink(self, path):
         """
@@ -138,11 +132,15 @@ class TreeKey(object):
         return -errno.EINVAL
     def readdir(self, offset):
         return -errno.EINVAL
+    def read(self, length, offset):
+        return -errno.EINVAL
 
 class NoEntry(TreeKey):
     def getattr(self):
         return -errno.ENOENT
     def readdir(self, offset):
+        return -errno.ENOENT
+    def read(self, length, offset):
         return -errno.ENOENT
 
 class TreeEntry(TreeKey):
@@ -201,6 +199,9 @@ class File(TreeEntry, str):
         st.st_nlink = 1
         st.st_size = len(self)
         return st
+
+    def read(self, length, offset):
+        return self[offset:offset + length]
 
 def main(cls):
     """
