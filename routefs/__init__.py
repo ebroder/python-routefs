@@ -83,7 +83,7 @@ class RouteFS(fuse.Fuse):
         """
         match = self.map.match(path)
         if match is None:
-            return
+            return NoEntry()
         controller = match.pop('controller')
         result = getattr(self, controller)(**match)
         if type(result) is str:
@@ -112,7 +112,7 @@ class RouteFS(fuse.Fuse):
         predetermined based on which it is.
         """
         obj = self._get_file(path)
-        if obj is None:
+        if type(obj) is NoEntry:
             return -errno.ENOENT
         
         st = RouteStat()
@@ -136,7 +136,7 @@ class RouteFS(fuse.Fuse):
         of the file
         """
         obj = self._get_file(path)
-        if obj is None:
+        if type(obj) is NoEntry:
             return -errno.ENOENT
         elif type(obj) in (Directory, Symlink):
             return -errno.EINVAL
@@ -155,7 +155,13 @@ class RouteFS(fuse.Fuse):
         else:
             return obj
 
-class TreeEntry(object):
+class TreeKey(object):
+    pass
+
+class NoEntry(TreeKey):
+    pass
+
+class TreeEntry(TreeKey):
     default_mode = 0444
     
     def __new__(cls, contents, mode=None):
