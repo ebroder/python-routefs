@@ -7,6 +7,7 @@ from routes import Mapper
 class PyHesiodFS(routefs.RouteFS):
     def __init__(self, *args, **kwargs):
         super(PyHesiodFS, self).__init__(*args, **kwargs)
+        self.fuse_args.add("allow_other", True)
         
         self.cache = {}
     
