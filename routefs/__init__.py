@@ -193,7 +193,7 @@ def main(cls):
     server = cls(version="%prog " + fuse.__version__,
                  usage=fuse.Fuse.fusage,
                  dash_s_do='setsingle')
-    server.parse(errex=1)
+    server.parse(values=server, errex=1)
     server.main()
 
 from dictfs import DictFS
