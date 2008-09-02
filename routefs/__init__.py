@@ -148,7 +148,9 @@ class RouteFS(fuse.Fuse):
         If the path specified is a symlink, return the target
         """
         obj = self._get_file(path)
-        if type(obj) is not Symlink:
+        if obj is None:
+            return -errno.ENOENT
+        elif type(obj) is not Symlink:
             return -errno.EINVAL
         else:
             return obj
