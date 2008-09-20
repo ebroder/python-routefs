@@ -1,0 +1,15 @@
+Source: python-routefs
+Section: python
+Priority: extra
+Maintainer: Evan Broder <broder@mit.edu>
+Build-Depends: cdbs, debhelper, quilt, python-all-dev, python-support, python-setuptools
+Standards-Version: 3.7.2
+
+Package: python-routefs
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}, python-fuse, python-routes
+Provides: ${python:Provides}
+Description: RouteFS: A FUSE API wrapper based on URL routing
+ RouteFS makes it easy to write read-only FUSE-based filesystems in
+ terms of the resulting directory structure by exploting the URL
+ processing library Routes originally written for web-development.

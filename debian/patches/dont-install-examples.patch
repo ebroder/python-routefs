@@ -1,0 +1,13 @@
+Index: python-routefs/setup.py
+===================================================================
+--- python-routefs.orig/setup.py	2008-09-19 21:48:51.000000000 -0400
++++ python-routefs/setup.py	2008-09-19 21:49:33.000000000 -0400
+@@ -10,7 +10,7 @@
+     author_email="broder@mit.edu",
+     url="http://ebroder.net/code/RouteFS",
+     license="MPL, GPL",
+-    packages=find_packages(),
++    packages=['routefs'],
+     install_requires=['fuse_python>=0.2a', 'Routes>=1.7'],
+     classifiers=[
+         'Development Status :: 5 - Production/Stable',
