@@ -86,6 +86,8 @@ class RouteFS(fuse.Fuse):
             return NoEntry()
         controller = match.pop('controller')
         result = getattr(self, controller)(**match)
+        if result is None:
+            return NoEntry()
         if type(result) is str:
             result = File(result)
         if type(result) is list:
