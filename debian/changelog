@@ -1,3 +1,9 @@
+python-routefs (1.0.1-1) unstable; urgency=low
+
+  * Correctly deal with a controller returning None.
+
+ -- Evan Broder <broder@mit.edu>  Sat, 20 Sep 2008 13:01:27 -0400
+
 python-routefs (1.0.0-1) unstable; urgency=low
 
   * Initial release
