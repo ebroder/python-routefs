@@ -5,10 +5,6 @@ lets you focus on the directory tree instead of the system calls.
 RouteFS uses the Routes library developed for Pylons. URLs were
 inspired by filesystems, and now you can have filesystems inspired by
 URLs.
-
-When developing a descendent of RouteFS, any methods defined in that
-class are considered "controllers", and receive any other parameters
-specified by the URL as keyword arguments.
 """
 
 import fuse
@@ -35,32 +31,20 @@ class RouteStat(fuse.Stat):
         self.st_mtime = 0
         self.st_ctime = 0
 
-class RouteMeta(type):
-    """
-    Metaclass to calculate controller methods
-    
-    Routes needs to be pre-seeded with a list of "controllers". For
-    all descendents of RouteFS, the list of controllers is defined to
-    be any non-private methods of the class that were not in the
-    RouteFS class.
-    """
-    def __init__(cls, classname, bases, dict_):
-        super(RouteMeta, cls).__init__(classname, bases, dict_)
-        if bases != (fuse.Fuse,):
-            new_funcs = set(dict_.keys()).difference(dir(RouteFS))
-            cls.controllers([func for func in new_funcs \
-                                 if not func.startswith('_')])
-
 class RouteFS(fuse.Fuse):
     """
     RouteFS: Web 2.0 for filesystems
+    
+    Any method that will be used as the controller in a Routes mapping
+    (either by explicitly specifying the controller or by using the
+    ':controller' variable) must be added to RouteFS.controllers
     """
-    __metaclass__ = RouteMeta
+    controllers = []
     def __init__(self, *args, **kwargs):
         super(RouteFS, self).__init__(*args, **kwargs)
         
         self.map = self.make_map()
-        self.map.create_regs(self.controller_list)
+        self.map.create_regs(self.controllers)
         
     def make_map(self):
         """
@@ -72,10 +56,6 @@ class RouteFS(fuse.Fuse):
         m.connect(':controller')
         
         return m
-    
-    @classmethod
-    def controllers(cls, lst):
-        cls.controller_list = lst
     
     def _get_file(self, path):
         """
