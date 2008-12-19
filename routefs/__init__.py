@@ -98,16 +98,7 @@ class RouteFS(fuse.Fuse):
             raise AttributeError, attr
     
 class TreeKey(object):
-    def getattr(self):
-        return -errno.EINVAL
-    def readdir(self, offset):
-        return -errno.EINVAL
-    def read(self, length, offset):
-        return -errno.EINVAL
-    def readlink(self):
-        return -errno.EINVAL
-    def write(self, length, offset):
-        return -errno.EINVAL
+    pass
 
 class NoEntry(TreeKey):
     def getattr(self):
