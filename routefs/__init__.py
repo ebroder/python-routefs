@@ -103,14 +103,6 @@ class TreeKey(object):
 class NoEntry(TreeKey):
     def getattr(self):
         return -errno.ENOENT
-    def readdir(self, offset):
-        return -errno.ENOENT
-    def read(self, length, offset):
-        return -errno.ENOENT
-    def readlink(self):
-        return -errno.ENOENT
-    def write(self, length, offset):
-        return -errno.ENOENT
 
 class TreeEntry(TreeKey):
     default_mode = 0444
