@@ -15,6 +15,8 @@ from routes import Mapper
 import os
 
 class DictFS(routefs.RouteFS):
+    controllers = ['handler']
+    
     @property
     def files(self):
         """
