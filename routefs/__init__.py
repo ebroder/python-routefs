@@ -74,42 +74,29 @@ class RouteFS(fuse.Fuse):
             result = Directory(result)
         return result
     
-    def readdir(self, path, offset):
+    def __getattr__(self, attr):
         """
-        If the path referred to is a directory, return the elements of
-        that diectory
+        If the requested attribute is one of the standard FUSE op,
+        return a function which finds the file matching the requested
+        path, and passes the op to the object corresponding to that
+        file.
         """
-        return self._get_file(path).readdir(offset)
-    
-    def getattr(self, path):
-        """
-        Return the stat information for a path
+        def op(path, *args):
+            file = self._get_file(path)
+            if hasattr(file, attr) and callable(getattr(file, attr)):
+                return getattr(file, attr)(*args)
+            else:
+                return -errno.EINVAL
         
-        The stat information for a directory, symlink, or file is
-        predetermined based on which it is.
-        """
-        return self._get_file(path).getattr()
+        if attr in ['getattr', 'readlink', 'readdir', 'mknod', 'mkdir',
+                    'unlink', 'rmdir', 'symlink', 'rename', 'link', 'chmod',
+                    'chown', 'truncate', 'utime', 'open', 'read',
+                    'write', 'release', 'fsync', 'flush', 'getxattr',
+                    'listxattr', 'setxattr', 'removexattr']:
+            return op
+        else:
+            raise AttributeError, attr
     
-    def read(self, path, length, offset):
-        """
-        If the path specified is a file, return the requested portion
-        of the file
-        """
-        return self._get_file(path).read(length, offset)
-    
-    def readlink(self, path):
-        """
-        If the path specified is a symlink, return the target
-        """
-        return self._get_file(path).readlink()
-    
-    def write(self, path, buf, offset):
-        """
-        If the path specified is a file, call the appropriate member 
-        on the file
-        """
-        return self._get_file(path).write(buf, offset)
-
 class TreeKey(object):
     def getattr(self):
         return -errno.EINVAL
