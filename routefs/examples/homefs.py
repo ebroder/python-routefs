@@ -17,8 +17,9 @@ class HomeFS(routefs.RouteFS):
     def __init__(self, *args, **kwargs):
         super(HomeFS, self).__init__(*args, **kwargs)
         self.cache = {}
-    
-    def make_map(self):
+
+    @property
+    def map(self):
         m = Mapper()
         m.connect('', controller='getList')
         m.connect(':action', controller='getUser')

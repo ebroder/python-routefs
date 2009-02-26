@@ -12,7 +12,8 @@ class PyHesiodFS(routefs.RouteFS):
         
         self.cache = {}
     
-    def make_map(self):
+    @property
+    def map(self):
         m = Mapper()
         m.connect('', controller='getList')
         m.connect('README.txt', controller='getReadme')

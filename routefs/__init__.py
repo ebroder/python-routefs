@@ -43,13 +43,13 @@ class RouteFS(fuse.Fuse):
     def __init__(self, *args, **kwargs):
         super(RouteFS, self).__init__(*args, **kwargs)
         
-        self.map = self.make_map()
         self.map.create_regs(self.controllers)
-        
-    def make_map(self):
+    
+    @property
+    def map(self):
         """
-        This method should be overridden by descendents of RouteFS to
-        define the routing for the filesystem
+        This property should be overridden by descendents of RouteFS
+        to define the routing for the filesystem
         """
         m = routes.Mapper()
         

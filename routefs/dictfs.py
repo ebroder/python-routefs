@@ -24,7 +24,8 @@ class DictFS(routefs.RouteFS):
         """
         return dict()
     
-    def make_map(self):
+    @property
+    def map(self):
         m = Mapper()
         
         m.connect('*path', controller='handler')
