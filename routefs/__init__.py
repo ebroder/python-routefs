@@ -5,18 +5,18 @@ lets you focus on the directory tree instead of the system calls.
 RouteFS uses the Routes library developed for Pylons. URLs were
 inspired by filesystems, and now you can have filesystems inspired by
 URLs.
-
-When developing a descendent of RouteFS, any methods defined in that
-class are considered "controllers", and receive any other parameters
-specified by the URL as keyword arguments.
 """
 
-import fuse
-import routes
+
 import errno
 import stat
 
+import fuse
+import routes
+
+
 fuse.fuse_python_api = (0, 2)
+
 
 class RouteStat(fuse.Stat):
     """
@@ -35,48 +35,33 @@ class RouteStat(fuse.Stat):
         self.st_mtime = 0
         self.st_ctime = 0
 
-class RouteMeta(type):
-    """
-    Metaclass to calculate controller methods
-    
-    Routes needs to be pre-seeded with a list of "controllers". For
-    all descendents of RouteFS, the list of controllers is defined to
-    be any non-private methods of the class that were not in the
-    RouteFS class.
-    """
-    def __init__(cls, classname, bases, dict_):
-        super(RouteMeta, cls).__init__(classname, bases, dict_)
-        if bases != (fuse.Fuse,):
-            new_funcs = set(dict_.keys()).difference(dir(RouteFS))
-            cls.controllers([func for func in new_funcs \
-                                 if not func.startswith('_')])
 
 class RouteFS(fuse.Fuse):
     """
     RouteFS: Web 2.0 for filesystems
+
+    Any method that will be used as the controller in a Routes mapping
+    (either by explicitly specifying the controller or by using the
+    ':controller' variable) must be added to RouteFS.controllers
     """
-    __metaclass__ = RouteMeta
+    controllers = []
     def __init__(self, *args, **kwargs):
         super(RouteFS, self).__init__(*args, **kwargs)
-        
+
         self.map = self.make_map()
-        self.map.create_regs(self.controller_list)
-        
+        self.map.create_regs(self.controllers)
+
     def make_map(self):
         """
         This method should be overridden by descendents of RouteFS to
         define the routing for the filesystem
         """
         m = routes.Mapper()
-        
+
         m.connect(':controller')
-        
+
         return m
-    
-    @classmethod
-    def controllers(cls, lst):
-        cls.controller_list = lst
-    
+
     def _get_file(self, path):
         """
         Find the filesystem entry object for a given path
@@ -93,35 +78,43 @@ class RouteFS(fuse.Fuse):
         if type(result) is list:
             result = Directory(result)
         return result
-    
+
     def readdir(self, path, offset):
         """
         If the path referred to is a directory, return the elements of
         that diectory
         """
         return self._get_file(path).readdir(offset)
-    
+
     def getattr(self, path):
         """
         Return the stat information for a path
-        
+
         The stat information for a directory, symlink, or file is
         predetermined based on which it is.
         """
         return self._get_file(path).getattr()
-    
+
     def read(self, path, length, offset):
         """
         If the path specified is a file, return the requested portion
         of the file
         """
         return self._get_file(path).read(length, offset)
-    
+
     def readlink(self, path):
         """
         If the path specified is a symlink, return the target
         """
         return self._get_file(path).readlink()
+
+    def write(self, path, buf, offset):
+        """
+        If the path specified is a file, call the appropriate member 
+        on the file
+        """
+        return self._get_file(path).write(buf, offset)
+
 
 class TreeKey(object):
     def getattr(self):
@@ -132,6 +125,9 @@ class TreeKey(object):
         return -errno.EINVAL
     def readlink(self):
         return -errno.EINVAL
+    def write(self, length, offset):
+        return -errno.EINVAL
+
 
 class NoEntry(TreeKey):
     def getattr(self):
@@ -142,20 +138,24 @@ class NoEntry(TreeKey):
         return -errno.ENOENT
     def readlink(self):
         return -errno.ENOENT
+    def write(self, length, offset):
+        return -errno.ENOENT
+
 
 class TreeEntry(TreeKey):
     default_mode = 0444
-    
+
     def __new__(cls, contents, mode=None):
         return super(TreeEntry, cls).__new__(cls, contents)
-    
+
     def __init__(self, contents, mode=None):
         if mode is None:
             self.mode = self.default_mode
         else:
             self.mode = mode
-        
+
         super(TreeEntry, self).__init__(contents)
+
 
 class Directory(TreeEntry, list):
     """
@@ -174,6 +174,7 @@ class Directory(TreeEntry, list):
         for member in ['.', '..'] + self:
             yield fuse.Direntry(str(member))
 
+
 class Symlink(TreeEntry, str):
     """
     A dummy class representing something that should be a symlink
@@ -189,6 +190,7 @@ class Symlink(TreeEntry, str):
 
     def readlink(self):
         return self
+
 
 class File(TreeEntry, str):
     """
@@ -206,6 +208,7 @@ class File(TreeEntry, str):
     def read(self, length, offset):
         return self[offset:offset + length]
 
+
 def main(cls):
     """
     A convenience function for initializing a RouteFS filesystem
@@ -215,6 +218,7 @@ def main(cls):
                  dash_s_do='setsingle')
     server.parse(values=server, errex=1)
     server.main()
+
 
 from dictfs import DictFS
 

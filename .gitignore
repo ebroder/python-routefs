@@ -2,3 +2,4 @@ RouteFS.egg-info
 build
 dist
 *.pyc
+.DS_Store
