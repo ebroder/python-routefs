@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="RouteFS",
-    version="1.0.1",
+    version="1.1.0",
     description="RouteFS: A FUSE API wrapper based on URL routing",
     author="Evan Broder",
     author_email="broder@mit.edu",
