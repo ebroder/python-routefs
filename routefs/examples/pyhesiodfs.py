@@ -17,9 +17,9 @@ class PyHesiodFS(routefs.RouteFS):
 
     def make_map(self):
         m = Mapper()
-        m.connect('', controller='getList')
-        m.connect('README.txt', controller='getReadme')
-        m.connect(':action', controller='getLocker')
+        m.connect('/', controller='getList')
+        m.connect('/README.txt', controller='getReadme')
+        m.connect('/{action}', controller='getLocker')
         return m
 
     def getLocker(self, action, **kwargs):

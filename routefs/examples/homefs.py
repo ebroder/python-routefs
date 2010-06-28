@@ -24,8 +24,8 @@ class HomeFS(routefs.RouteFS):
 
     def make_map(self):
         m = Mapper()
-        m.connect('', controller='getList')
-        m.connect(':action', controller='getUser')
+        m.connect('/', controller='getList')
+        m.connect('/{action}', controller='getUser')
         return m
 
     def getUser(self, action, **kwargs):

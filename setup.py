@@ -11,7 +11,7 @@ setup(
     url="http://github.com/ebroder/python-routefs/wikis",
     license="MPL, GPL",
     packages=find_packages(),
-    install_requires=['fuse_python>=0.2a', 'Routes>=1.7'],
+    install_requires=['fuse_python>=0.2a', 'Routes>=1.9'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Plugins',

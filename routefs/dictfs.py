@@ -31,7 +31,7 @@ class DictFS(routefs.RouteFS):
     def make_map(self):
         m = Mapper()
 
-        m.connect('*path', controller='handler')
+        m.connect('/{path:.*}', controller='handler')
 
         return m
 
