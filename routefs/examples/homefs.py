@@ -17,7 +17,6 @@ import routefs
 
 
 class HomeFS(routefs.RouteFS):
-    controllers = ['getList', 'getUser']
     def __init__(self, *args, **kwargs):
         super(HomeFS, self).__init__(*args, **kwargs)
         self.cache = {}
