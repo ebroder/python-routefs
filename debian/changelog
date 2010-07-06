@@ -1,3 +1,9 @@
+python-routefs (1.1.2-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Evan Broder <broder@mit.edu>  Tue,  6 Jul 2010 09:03:43 -0400
+
 python-routefs (1.1.1-1) unstable; urgency=low
 
   * New upstream release.
