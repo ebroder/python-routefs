@@ -19,8 +19,6 @@ import routefs
 
 
 class DictFS(routefs.RouteFS):
-    controllers = ['handler']
-
     @property
     def files(self):
         """

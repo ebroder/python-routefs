@@ -39,17 +39,11 @@ class RouteStat(fuse.Stat):
 class RouteFS(fuse.Fuse):
     """
     RouteFS: Web 2.0 for filesystems
-
-    Any method that will be used as the controller in a Routes mapping
-    (either by explicitly specifying the controller or by using the
-    ':controller' variable) must be added to RouteFS.controllers
     """
-    controllers = []
     def __init__(self, *args, **kwargs):
         super(RouteFS, self).__init__(*args, **kwargs)
 
         self.map = self.make_map()
-        self.map.create_regs(self.controllers)
 
     def make_map(self):
         """
@@ -58,7 +52,7 @@ class RouteFS(fuse.Fuse):
         """
         m = routes.Mapper()
 
-        m.connect(':controller')
+        m.connect('{controller}')
 
         return m
 
