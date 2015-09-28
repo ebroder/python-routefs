@@ -13,7 +13,7 @@ import stat
 
 import fuse
 import routes
-
+import signal
 
 fuse.fuse_python_api = (0, 2)
 
@@ -211,6 +211,7 @@ def main(cls):
                  usage=fuse.Fuse.fusage,
                  dash_s_do='setsingle')
     server.parse(values=server, errex=1)
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
     server.main()
 
 
