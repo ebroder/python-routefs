@@ -85,8 +85,6 @@ class RouteFS(fuse.Fuse):
             file = self._get_file(path)
             if hasattr(file, attr) and callable(getattr(file, attr)):
                 return getattr(file, attr)(*args)
-            else:
-                return -errno.EINVAL
         
         if attr in ['getattr', 'readlink', 'readdir', 'mknod', 'mkdir',
                     'unlink', 'rmdir', 'symlink', 'rename', 'link', 'chmod',
