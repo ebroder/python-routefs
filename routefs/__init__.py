@@ -90,7 +90,7 @@ class RouteFS(fuse.Fuse):
                     'unlink', 'rmdir', 'symlink', 'rename', 'link', 'chmod',
                     'chown', 'truncate', 'utime', 'open', 'read',
                     'write', 'release', 'fsync', 'flush', 'getxattr',
-                    'listxattr', 'setxattr', 'removexattr']:
+                    'listxattr', 'setxattr', 'removexattr', 'ftruncate', 'create']:
             return op
         else:
             raise AttributeError, attr
@@ -103,6 +103,10 @@ class TreeKey(object):
 class NoEntry(TreeKey):
     def getattr(self):
         return -errno.ENOENT
+      
+    def create(self, flags, mode):
+        return -errno.EACCES
+
 
 
 class TreeEntry(TreeKey):
