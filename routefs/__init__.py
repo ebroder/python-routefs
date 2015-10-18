@@ -13,7 +13,7 @@ import stat
 
 import fuse
 import routes
-
+import signal
 
 fuse.fuse_python_api = (0, 2)
 
@@ -73,67 +73,40 @@ class RouteFS(fuse.Fuse):
             result = Directory(result)
         return result
 
-    def readdir(self, path, offset):
-        """
-        If the path referred to is a directory, return the elements of
-        that diectory
-        """
-        return self._get_file(path).readdir(offset)
 
-    def getattr(self, path):
+    def __getattr__(self, attr):
         """
-        Return the stat information for a path
-
-        The stat information for a directory, symlink, or file is
-        predetermined based on which it is.
+        If the requested attribute is one of the standard FUSE op,
+        return a function which finds the file matching the requested
+        path, and passes the op to the object corresponding to that
+        file.
         """
-        return self._get_file(path).getattr()
-
-    def read(self, path, length, offset):
-        """
-        If the path specified is a file, return the requested portion
-        of the file
-        """
-        return self._get_file(path).read(length, offset)
-
-    def readlink(self, path):
-        """
-        If the path specified is a symlink, return the target
-        """
-        return self._get_file(path).readlink()
-
-    def write(self, path, buf, offset):
-        """
-        If the path specified is a file, call the appropriate member 
-        on the file
-        """
-        return self._get_file(path).write(buf, offset)
+        def op(path, *args):
+            file = self._get_file(path)
+            if hasattr(file, attr) and callable(getattr(file, attr)):
+                return getattr(file, attr)(*args)
+        
+        if attr in ['getattr', 'readlink', 'readdir', 'mknod', 'mkdir',
+                    'unlink', 'rmdir', 'symlink', 'rename', 'link', 'chmod',
+                    'chown', 'truncate', 'utime', 'open', 'read',
+                    'write', 'release', 'fsync', 'flush', 'getxattr',
+                    'listxattr', 'setxattr', 'removexattr', 'ftruncate', 'create']:
+            return op
+        else:
+            raise AttributeError, attr
 
 
 class TreeKey(object):
-    def getattr(self):
-        return -errno.EINVAL
-    def readdir(self, offset):
-        return -errno.EINVAL
-    def read(self, length, offset):
-        return -errno.EINVAL
-    def readlink(self):
-        return -errno.EINVAL
-    def write(self, length, offset):
-        return -errno.EINVAL
+    pass
 
 
 class NoEntry(TreeKey):
     def getattr(self):
         return -errno.ENOENT
-    def readdir(self, offset):
-        return -errno.ENOENT
-    def read(self, length, offset):
-        return -errno.ENOENT
-    def readlink(self):
-        return -errno.ENOENT
-    def write(self, length, offset):
-        return -errno.ENOENT
+      
+    def create(self, flags, mode):
+        return -errno.EACCES
+
 
 
 class TreeEntry(TreeKey):
@@ -211,6 +184,7 @@ def main(cls):
                  usage=fuse.Fuse.fusage,
                  dash_s_do='setsingle')
     server.parse(values=server, errex=1)
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
     server.main()
 
 
